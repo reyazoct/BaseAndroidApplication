@@ -1,6 +1,7 @@
 [versions]
 agp = "8.2.0-alpha15"
 appcompat = "1.6.1"
+compiler = "1.5.1"
 kotlin = "1.8.10"
 core-ktx = "1.10.1"
 lifecycle-runtime-ktx = "2.6.1"
@@ -8,9 +9,16 @@ activity-compose = "1.7.2"
 compose-bom = "2023.03.00"
 logging-interceptor = "4.9.1"
 material = "1.9.0"
+material3 = "1.1.1"
 retrofit = "2.9.0"
+ui = "1.5.0"
+joda = "2.10.12"
 
 [libraries]
+androidx-compiler = { module = "androidx.compose.compiler:compiler", version.ref = "compiler" }
+androidx-material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
+androidx-ui = { module = "androidx.compose.ui:ui", version.ref = "ui" }
+androidx-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "ui" }
 appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
@@ -25,6 +33,7 @@ ui = { group = "androidx.compose.ui", name = "ui" }
 ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 material3 = { group = "androidx.compose.material3", name = "material3" }
+jodaDateTime = { group = "joda-time", name = "joda-time", version.ref = "joda" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

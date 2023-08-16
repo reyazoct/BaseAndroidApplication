@@ -60,4 +60,5 @@ dependencies {
     implementation(libs.material3)
 
     implementation(project(":boilerPlate"))
+    implementation(project(":graph"))
 }

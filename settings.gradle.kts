@@ -16,3 +16,4 @@ dependencyResolutionManagement {
 rootProject.name = "Base Application"
 include(":app")
 include(":boilerPlate")
+include(":graph")

@@ -1,6 +1,7 @@
+@Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
-    id("com.android.library")
-    id("org.jetbrains.kotlin.android")
+    alias(libs.plugins.androidLibrary)
+    alias(libs.plugins.kotlinAndroid)
     id("maven-publish")
 }
 
@@ -31,14 +32,12 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.compiler)
+    implementation(libs.androidx.material3)
+    implementation(libs.androidx.ui.tooling.preview)
 
-    implementation(libs.core.ktx)
-    implementation(libs.appcompat)
-    implementation(libs.material)
-    implementation(libs.lifecycle.viewmodel.ktx)
-    implementation(libs.retrofit)
-    implementation(libs.logging.interceptor)
-    implementation(libs.converter.gson)
+    implementation(libs.jodaDateTime)
 }
 
 afterEvaluate {
@@ -46,7 +45,7 @@ afterEvaluate {
         publications {
             register<MavenPublication>("release") {
                 groupId = "com.reyaz"
-                artifactId = "boilerPlate"
+                artifactId = "graphs"
                 version = "0.1"
 
                 afterEvaluate {
