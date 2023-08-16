@@ -44,6 +44,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
 
     implementation(libs.jodaDateTime)
+    implementation(libs.converter.gson)
 }
 
 afterEvaluate {
