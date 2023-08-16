@@ -58,7 +58,7 @@ fun PercentageBarChart(
                 ),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                style = typeTextStyle,
+                style = typeTextStyle.copy(textAlign = TextAlign.Center),
             )
             val topOffset = if (maxPercentage > 0) percentageMeasuredText.size.height + typeMeasuredText.size.height else 0
             val bottomOffset = if (minPercentage < 0) percentageMeasuredText.size.height + typeMeasuredText.size.height else 0
