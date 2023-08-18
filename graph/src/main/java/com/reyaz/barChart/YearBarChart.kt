@@ -1,7 +1,9 @@
 package com.reyaz.barChart
 
+import androidx.annotation.FloatRange
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.StrokeCap
@@ -43,13 +47,16 @@ fun YearBarChart(
     modifier: Modifier = Modifier,
     multiStockPointList: List<MultiStockPoint>,
     title: String? = null,
-    barWidthDp: Dp = 32.dp,
+    @FloatRange(from = 0.0, to = 1.0) barWidthRatio: Float = 0.75F,
     titleStyle: TextStyle = TextStyle.Default,
     tagStyle: TextStyle = TextStyle.Default,
     yearStyle: TextStyle = TextStyle.Default,
     valueStyle: TextStyle = TextStyle.Default,
 ) {
-    Column(modifier = modifier.fillMaxSize()) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+    ) {
         if (multiStockPointList.isEmpty()) return
         val flattenMap = multiStockPointList.asSequence().map { it.stockPointList }.flatten()
 
@@ -162,14 +169,20 @@ fun YearBarChart(
             else if (minValue <= 0 && maxValue <= 0) 0F
             else size.height - heightTaken
 
-            val barWidth = barWidthDp.value
-            val gapWidth = (size.width - widthTaken - (barWidth * yearsEpoch.size * multiStockPointList.size)) / yearsEpoch.size
+            val numberOfBarGraphs = yearsEpoch.size * multiStockPointList.size
+            val barWidth = (size.width - widthTaken) / (numberOfBarGraphs / barWidthRatio)
+            val gapWidth = (size.width - widthTaken - (barWidth * numberOfBarGraphs)) / yearsEpoch.size
             multiStockPointList.fold(0F) { barMargin, multiStockPoint ->
                 multiStockPoint.stockPointList.fold(gapWidth / 2) { totalGapTaken, stockPoint ->
                     val barHeight = division * stockPoint.stockValue
                     val color = if (stockPoint.stockValue >= 0) multiStockPoint.positiveGraphColor else multiStockPoint.negativeGraphColor
+
+                    val startGradient = color.copy(1F)
+                    val endGradient = color.copy(0F)
+                    val brush = if (stockPoint.stockValue >= 0) Brush.verticalGradient(listOf(startGradient, endGradient))
+                    else Brush.verticalGradient(listOf(endGradient, startGradient))
                     drawRect(
-                        color = color,
+                        brush = brush,
                         topLeft = Offset(
                             widthTaken + totalGapTaken + barMargin,
                             (zeroPosition - barHeight).toFloat(),
@@ -239,23 +252,15 @@ private fun Demo() {
                     StockPoint(1629316804000, 3.0),
                     StockPoint(1597780804000, 1.0),
                     StockPoint(1566158404000, -5.0),
+                    StockPoint(1534622404000, 4.0),
+                    StockPoint(1503086404000, -2.0),
+                    StockPoint(1471550404000, -4.0),
+                    StockPoint(1439928004000, 1.0),
                 ),
                 positiveGraphColor = Color(0xFF2DC57B),
                 negativeGraphColor = Color(0xFFE44848),
                 null,
             ),
-            MultiStockPoint(
-                stockPointList = listOf(
-                    StockPoint(1692388804000, 2.0),
-                    StockPoint(1660852804000, 3.0),
-                    StockPoint(1629316804000, 3.0),
-                    StockPoint(1597780804000, 1.0),
-                    StockPoint(1566158404000, -5.0),
-                ),
-                positiveGraphColor = Color(0x772DC57B),
-                negativeGraphColor = Color(0x77E44848),
-                null,
-            )
         ),
         title = "WR Score"
     )
