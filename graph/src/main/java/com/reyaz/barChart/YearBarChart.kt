@@ -141,16 +141,15 @@ fun YearBarChart(
                 val year = DateTime(epoch).year().get().toString()
                 val yearMeasuredText = textMeasurer.measure(
                     text = AnnotatedString(year),
+                    constraints = Constraints.fixedWidth(((size.width - widthTaken) / yearsEpoch.size).toInt()),
                     maxLines = 1,
-                    style = yearStyle,
-                    softWrap = false,
+                    style = yearStyle.copy(textAlign = TextAlign.Center),
                 )
 
-                val x = (((size.width - widthTaken + yearMeasuredText.size.width) / (yearsEpoch.size - 1)) * index) + widthTaken - ((yearMeasuredText.size.width / (yearsEpoch.size - 1)) * index) - yearMeasuredText.size.width / 2
                 drawText(
                     textLayoutResult = yearMeasuredText,
                     topLeft = Offset(
-                        x,
+                        widthTaken + yearMeasuredText.size.width * index,
                         size.height - yearMeasuredText.size.height
                     ),
                 )
@@ -180,7 +179,7 @@ fun YearBarChart(
                             barHeight.toFloat(),
                         )
                     )
-                    totalGapTaken + gapWidth
+                    totalGapTaken + gapWidth + barWidth
                 }
             }
             drawLine(
@@ -215,9 +214,11 @@ private fun Demo() {
         multiStockPointList = listOf(
             MultiStockPoint(
                 stockPointList = listOf(
-                    StockPoint(1626312377000, 2.0),
-                    StockPoint(1626312377000, 3.0),
-                    StockPoint(1626312377000, -1.0),
+                    StockPoint(1692388804000, 2.0),
+                    StockPoint(1660852804000, 3.0),
+                    StockPoint(1629316804000, 3.0),
+                    StockPoint(1597780804000, 1.0),
+                    StockPoint(1566158404000, 5.0),
                 ),
                 positiveGraphColor = Color(0xFF2DC57B),
                 negativeGraphColor = Color(0xFFE44848),
