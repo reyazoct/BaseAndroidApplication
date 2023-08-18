@@ -45,7 +45,7 @@ fun Double?.toDisplayPercentage(sign: Boolean = false, @IntRange(from = 0, to = 
     val double = this ?: 0.0
     val numberFormat = DecimalFormat.getInstance()
     numberFormat.maximumFractionDigits = decimalPoints
-    val percentageInString = toDisplayValue()
+    val percentageInString = numberFormat.format(double).plus("%")
     return if (double > 0 && sign) {
         "+".plus(percentageInString)
     } else {
