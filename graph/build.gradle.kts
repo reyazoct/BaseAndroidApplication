@@ -45,6 +45,7 @@ dependencies {
 
     implementation(libs.jodaDateTime)
     implementation(libs.converter.gson)
+    debugImplementation(libs.androidx.ui.tooling)
 }
 
 afterEvaluate {

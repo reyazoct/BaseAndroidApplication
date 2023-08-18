@@ -141,7 +141,7 @@ fun PercentageBarChart(
 
 @Composable
 @Preview
-fun Demo() {
+private fun Demo() {
     val barChartInfoList = listOf(
         BarChartInfo(
             -3.0,
