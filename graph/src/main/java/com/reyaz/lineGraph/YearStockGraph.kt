@@ -151,7 +151,7 @@ fun YearStockGraph(
             val height = size.height - strokeWidth - heightTaken
             multiStockPointList.forEach { multiStockPoint ->
                 val stockPointList = multiStockPoint.stockPointList
-                val stockValues = stockPointList.mapNotNull { it.stockValue }
+                val stockValues = stockPointList.map { it.stockValue }
 
                 val division = height / (maxHeight - minHeight)
 

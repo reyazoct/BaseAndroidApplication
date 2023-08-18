@@ -45,6 +45,7 @@ fun YearBarChart(
     title: String? = null,
     barWidthDp: Dp = 32.dp,
     titleStyle: TextStyle = TextStyle.Default,
+    tagStyle: TextStyle = TextStyle.Default,
     yearStyle: TextStyle = TextStyle.Default,
     valueStyle: TextStyle = TextStyle.Default,
 ) {
@@ -109,7 +110,7 @@ fun YearBarChart(
                         ),
                     )
                 }
-                val counts = 6
+                val counts = 5
                 val step = (maxValue - minValue) / (counts - 1)
                 var numberMaxWidth = Int.MIN_VALUE
 
@@ -162,16 +163,15 @@ fun YearBarChart(
             else size.height - heightTaken
 
             val barWidth = barWidthDp.value
-            multiStockPointList.forEach { multiStockPoint ->
-                val stockPointListSize = multiStockPoint.stockPointList.size
-                val gapWidth = (size.width - widthTaken - (barWidth * stockPointListSize)) / (stockPointListSize)
+            val gapWidth = (size.width - widthTaken - (barWidth * yearsEpoch.size * multiStockPointList.size)) / yearsEpoch.size
+            multiStockPointList.fold(0F) { barMargin, multiStockPoint ->
                 multiStockPoint.stockPointList.fold(gapWidth / 2) { totalGapTaken, stockPoint ->
                     val barHeight = division * stockPoint.stockValue
                     val color = if (stockPoint.stockValue >= 0) multiStockPoint.positiveGraphColor else multiStockPoint.negativeGraphColor
                     drawRect(
                         color = color,
                         topLeft = Offset(
-                            widthTaken + totalGapTaken,
+                            widthTaken + totalGapTaken + barMargin,
                             (zeroPosition - barHeight).toFloat(),
                         ),
                         size = Size(
@@ -179,8 +179,9 @@ fun YearBarChart(
                             barHeight.toFloat(),
                         )
                     )
-                    totalGapTaken + gapWidth + barWidth
+                    totalGapTaken + gapWidth + (barWidth * multiStockPointList.size)
                 }
+                barMargin + barWidth
             }
             drawLine(
                 strokeWidth = 2.dp.toPx(),
@@ -201,6 +202,25 @@ fun YearBarChart(
                 )
             }
         }
+        val multiStockPointListWithTags = multiStockPointList.filter { it.tag != null }
+        if (multiStockPointListWithTags.isNotEmpty()) {
+            Spacer(modifier = Modifier.height(12.dp))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                multiStockPointListWithTags.forEach { multiStockPoint ->
+                    Box(
+                        modifier = Modifier
+                            .size(8.dp)
+                            .background(multiStockPoint.positiveGraphColor, RoundedCornerShape(50)),
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = multiStockPoint.tag.orEmpty(),
+                        style = tagStyle,
+                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+                }
+            }
+        }
     }
 }
 
@@ -218,10 +238,22 @@ private fun Demo() {
                     StockPoint(1660852804000, 3.0),
                     StockPoint(1629316804000, 3.0),
                     StockPoint(1597780804000, 1.0),
-                    StockPoint(1566158404000, 5.0),
+                    StockPoint(1566158404000, -5.0),
                 ),
                 positiveGraphColor = Color(0xFF2DC57B),
                 negativeGraphColor = Color(0xFFE44848),
+                null,
+            ),
+            MultiStockPoint(
+                stockPointList = listOf(
+                    StockPoint(1692388804000, 2.0),
+                    StockPoint(1660852804000, 3.0),
+                    StockPoint(1629316804000, 3.0),
+                    StockPoint(1597780804000, 1.0),
+                    StockPoint(1566158404000, -5.0),
+                ),
+                positiveGraphColor = Color(0x772DC57B),
+                negativeGraphColor = Color(0x77E44848),
                 null,
             )
         ),
