@@ -36,6 +36,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.reyaz.models.MultiStockPoint
 import com.reyaz.models.StockPoint
 import com.reyaz.util.toDisplayShortValue
@@ -200,7 +201,7 @@ fun YearBarChart(
                         maxLines = 1,
                         style = valueStyle.copy(textAlign = TextAlign.Center),
                     )
-                    if (valueMeasuredText.size.width < barWidth && valueMeasuredText.size.height < barHeight) {
+                    if (valueMeasuredText.size.width < barWidth.absoluteValue && valueMeasuredText.size.height < barHeight.absoluteValue) {
                         drawText(
                             valueMeasuredText,
                             topLeft = Offset(
@@ -267,13 +268,13 @@ private fun Demo() {
                 stockPointList = listOf(
                     StockPoint(1692388804000, 2.0),
                     StockPoint(1660852804000, 3.0),
-//                    StockPoint(1629316804000, 3.0),
-//                    StockPoint(1597780804000, 1.0),
-//                    StockPoint(1566158404000, -5.0),
-//                    StockPoint(1534622404000, 4.0),
-//                    StockPoint(1503086404000, -2.0),
-//                    StockPoint(1471550404000, -4.0),
-//                    StockPoint(1439928004000, 1.0),
+                    StockPoint(1629316804000, -2.0),
+                    StockPoint(1597780804000, 1.0),
+                    StockPoint(1566158404000, -5.0),
+                    StockPoint(1534622404000, 4.0),
+                    StockPoint(1503086404000, -2.0),
+                    StockPoint(1471550404000, -4.0),
+                    StockPoint(1439928004000, 1.0),
                 ),
                 positiveGraphColor = Color(0xFF2DC57B),
                 negativeGraphColor = Color(0xFFE44848),
