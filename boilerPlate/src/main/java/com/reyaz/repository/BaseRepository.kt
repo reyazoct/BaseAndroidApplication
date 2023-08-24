@@ -15,20 +15,12 @@ abstract class BaseRepository<AS> {
 
     abstract fun createClient(): AS
 
-    open suspend fun doBeforeTask() {
-
-    }
+    open suspend fun doBeforeTask() {}
 
     suspend fun <T> makeApiCall(call: suspend (apiService: AS) -> Response<T>): Response<T> {
         doBeforeTask()
         return call.invoke(client)
     }
-
-//    protected val phoneNumber: String
-//        get() = PrefsManager.getInstance(PrefsType.User).getLocalData(PrefsConstants.MOBILE_NO) ?: throw ExceptionUnauthorised()
-//
-//    protected val userId: String
-//        get() = PrefsManager.getInstance(PrefsType.User).getLocalData(PrefsConstants.USER_ID) ?: throw ExceptionUnauthorised()
 
     fun <T> responseToDataRequest(response: Response<T>): DataRequest<T> {
         return if (response.isSuccessful) {

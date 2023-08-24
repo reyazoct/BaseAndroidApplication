@@ -174,24 +174,42 @@ fun YearBarChart(
             val gapWidth = (size.width - widthTaken - (barWidth * numberOfBarGraphs)) / yearsEpoch.size
             multiStockPointList.fold(0F) { barMargin, multiStockPoint ->
                 multiStockPoint.stockPointList.fold(gapWidth / 2) { totalGapTaken, stockPoint ->
-                    val barHeight = division * stockPoint.stockValue
+                    val barHeight = (division * stockPoint.stockValue).toFloat()
                     val color = if (stockPoint.stockValue >= 0) multiStockPoint.positiveGraphColor else multiStockPoint.negativeGraphColor
 
                     val startGradient = color.copy(1F)
                     val endGradient = color.copy(0F)
                     val brush = if (stockPoint.stockValue >= 0) Brush.verticalGradient(listOf(startGradient, endGradient))
                     else Brush.verticalGradient(listOf(endGradient, startGradient))
+                    val leftX = widthTaken + totalGapTaken + barMargin
+                    val leftY = zeroPosition - barHeight
                     drawRect(
                         brush = brush,
                         topLeft = Offset(
-                            widthTaken + totalGapTaken + barMargin,
-                            (zeroPosition - barHeight).toFloat(),
+                            leftX,
+                            leftY,
                         ),
                         size = Size(
                             barWidth,
-                            barHeight.toFloat(),
+                            barHeight,
                         )
                     )
+
+                    val valueMeasuredText = textMeasurer.measure(
+                        text = AnnotatedString(stockPoint.stockValue.toDisplayShortValue()),
+                        maxLines = 1,
+                        style = valueStyle.copy(textAlign = TextAlign.Center),
+                    )
+                    if (valueMeasuredText.size.width < barWidth && valueMeasuredText.size.height < barHeight) {
+                        drawText(
+                            valueMeasuredText,
+                            topLeft = Offset(
+                                leftX + (barWidth - valueMeasuredText.size.width) / 2,
+                                leftY + (barHeight - valueMeasuredText.size.height) / 2,
+                            ),
+                        )
+                    }
+
                     totalGapTaken + gapWidth + (barWidth * multiStockPointList.size)
                 }
                 barMargin + barWidth
@@ -249,13 +267,13 @@ private fun Demo() {
                 stockPointList = listOf(
                     StockPoint(1692388804000, 2.0),
                     StockPoint(1660852804000, 3.0),
-                    StockPoint(1629316804000, 3.0),
-                    StockPoint(1597780804000, 1.0),
-                    StockPoint(1566158404000, -5.0),
-                    StockPoint(1534622404000, 4.0),
-                    StockPoint(1503086404000, -2.0),
-                    StockPoint(1471550404000, -4.0),
-                    StockPoint(1439928004000, 1.0),
+//                    StockPoint(1629316804000, 3.0),
+//                    StockPoint(1597780804000, 1.0),
+//                    StockPoint(1566158404000, -5.0),
+//                    StockPoint(1534622404000, 4.0),
+//                    StockPoint(1503086404000, -2.0),
+//                    StockPoint(1471550404000, -4.0),
+//                    StockPoint(1439928004000, 1.0),
                 ),
                 positiveGraphColor = Color(0xFF2DC57B),
                 negativeGraphColor = Color(0xFFE44848),
