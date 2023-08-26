@@ -19,6 +19,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.reyaz.models.BarChartInfo
 import com.reyaz.util.toDisplayShortPercentage
 import com.reyaz.models.UpDownValue
@@ -28,13 +29,33 @@ import kotlin.math.absoluteValue
 fun PercentageBarChart(
     modifier: Modifier = Modifier,
     data: List<BarChartInfo>,
+    disclaimerText: String? = null,
     percentageTextStyle: TextStyle = TextStyle.Default,
     typeTextStyle: TextStyle = TextStyle.Default,
+    disclaimerStyle: TextStyle = TextStyle.Default,
 ) {
     val textMeasurer = rememberTextMeasurer()
     Canvas(modifier = modifier) {
         if (data.isEmpty()) return@Canvas
-        val height = size.height
+
+        val heightTaken = if (disclaimerText != null) {
+            val disclaimerMeasuredText = textMeasurer.measure(
+                text = AnnotatedString(disclaimerText),
+                constraints = Constraints.fixedWidth(size.width.toInt()),
+                overflow = TextOverflow.Ellipsis,
+                style = disclaimerStyle,
+            )
+            drawText(
+                textLayoutResult = disclaimerMeasuredText,
+                topLeft = Offset(
+                    0F,
+                    size.height - disclaimerMeasuredText.size.height
+                ),
+            )
+            disclaimerMeasuredText.size.height.toFloat() + 8.sp.value
+        } else 0F
+
+        val height = size.height - heightTaken
         val width = size.width
         val maxPercentage = if (data.maxOf { it.percentage } < 0) 0.0 else data.maxOf { it.percentage }
         val minPercentage = if (data.minOf { it.percentage } > 0) 0.0 else data.minOf { it.percentage }
@@ -159,12 +180,11 @@ private fun Demo() {
             "Market",
         ),
     )
-    Column(modifier = Modifier.fillMaxSize()) {
-        PercentageBarChart(
-            modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(2F),
-            data = barChartInfoList,
-        )
-    }
+    PercentageBarChart(
+        modifier = Modifier
+            .fillMaxWidth()
+            .aspectRatio(2F),
+        data = barChartInfoList,
+        disclaimerText = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book"
+    )
 }
