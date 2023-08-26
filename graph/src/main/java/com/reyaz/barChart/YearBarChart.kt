@@ -1,9 +1,9 @@
 package com.reyaz.barChart
 
 import androidx.annotation.FloatRange
+import androidx.annotation.IntRange
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,7 +33,6 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Constraints
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.reyaz.models.MultiStockPoint
@@ -48,11 +46,15 @@ fun YearBarChart(
     modifier: Modifier = Modifier,
     multiStockPointList: List<MultiStockPoint>,
     title: String? = null,
+    disclaimerText: String? = null,
     @FloatRange(from = 0.0, to = 1.0) barWidthRatio: Float = 0.75F,
+    @IntRange(from = 3, to = 9) valueCount: Int = 5,
+    valueType: ValueType = ValueType.None,
     titleStyle: TextStyle = TextStyle.Default,
     tagStyle: TextStyle = TextStyle.Default,
     yearStyle: TextStyle = TextStyle.Default,
     valueStyle: TextStyle = TextStyle.Default,
+    disclaimerStyle: TextStyle = TextStyle.Default,
 ) {
     Column(
         modifier = modifier
@@ -98,7 +100,7 @@ fun YearBarChart(
 
                 val titleHeight = size.height - dummyYearMeasuredText.size.height
                 val titleMeasuredText = textMeasurer.measure(
-                    text = AnnotatedString(title),
+                    text = AnnotatedString(valueType.getDisplayTitle(title)),
                     maxLines = 1,
                     style = titleStyle.copy(textAlign = TextAlign.Center),
                     constraints = Constraints.fixedWidth(titleHeight.toInt())
@@ -118,13 +120,12 @@ fun YearBarChart(
                         ),
                     )
                 }
-                val counts = 5
-                val step = (maxValue - minValue) / (counts - 1)
+                val step = (maxValue - minValue) / (valueCount - 1)
                 var numberMaxWidth = Int.MIN_VALUE
 
-                repeat(counts) { index ->
+                repeat(valueCount) { index ->
                     val numberMeasuredText = textMeasurer.measure(
-                        text = AnnotatedString((minValue + (step * index)).toDisplayShortValue()),
+                        text = AnnotatedString(valueType.getDisplayValue((minValue + (step * index)).toDisplayShortValue())),
                         maxLines = 1,
                         style = valueStyle,
                         softWrap = false,
@@ -133,7 +134,7 @@ fun YearBarChart(
                         textLayoutResult = numberMeasuredText,
                         topLeft = Offset(
                             titleMeasuredText.size.height.toFloat() + 4.dp.value,
-                            (((size.height - dummyYearMeasuredText.size.height - numberMeasuredText.size.height) / (counts - 1)) * (counts - index - 1))
+                            (((size.height - dummyYearMeasuredText.size.height - numberMeasuredText.size.height) / (valueCount - 1)) * (valueCount - index - 1))
                         ),
                     )
                     if (numberMaxWidth < numberMeasuredText.size.width) {
@@ -145,7 +146,26 @@ fun YearBarChart(
             } else {
                 0F
             }
-            var heightTaken = 50F
+            var heightTaken = 0F
+
+            if (disclaimerText != null) {
+                val disclaimerMeasuredText = textMeasurer.measure(
+                    text = AnnotatedString(disclaimerText),
+                    constraints = Constraints.fixedWidth((size.width - widthTaken).toInt()),
+                    maxLines = 1,
+                    style = disclaimerStyle.copy(textAlign = TextAlign.Center),
+                )
+                drawText(
+                    textLayoutResult = disclaimerMeasuredText,
+                    topLeft = Offset(
+                        widthTaken,
+                        size.height - disclaimerMeasuredText.size.height
+                    ),
+                )
+                heightTaken = disclaimerMeasuredText.size.height.toFloat()
+            }
+
+            var yearHeight = 0F
             yearsEpoch.forEachIndexed { index, epoch ->
                 val year = DateTime(epoch).year().get().toString()
                 val yearMeasuredText = textMeasurer.measure(
@@ -159,11 +179,13 @@ fun YearBarChart(
                     textLayoutResult = yearMeasuredText,
                     topLeft = Offset(
                         widthTaken + yearMeasuredText.size.width * index,
-                        size.height - yearMeasuredText.size.height
+                        size.height - yearMeasuredText.size.height - heightTaken
                     ),
                 )
-                heightTaken = yearMeasuredText.size.height + 8.dp.value
+                yearHeight = yearMeasuredText.size.height + 8.dp.value
             }
+            heightTaken += yearHeight
+
             val division = (size.height - heightTaken) / (maxValue - minValue).absoluteValue
 
             val zeroPosition = if (maxValue.absoluteValue == minValue.absoluteValue) (size.height - heightTaken) / 2
@@ -197,18 +219,32 @@ fun YearBarChart(
                     )
 
                     val valueMeasuredText = textMeasurer.measure(
-                        text = AnnotatedString(stockPoint.stockValue.toDisplayShortValue()),
+                        text = AnnotatedString(valueType.getDisplayValue(stockPoint.stockValue.toDisplayShortValue())),
                         maxLines = 1,
-                        style = valueStyle.copy(textAlign = TextAlign.Center),
+                        style = valueStyle.copy(
+                            textAlign = TextAlign.Center,
+                            fontSize = 10.sp,
+                        ),
                     )
-                    if (valueMeasuredText.size.width < barWidth.absoluteValue && valueMeasuredText.size.height < barHeight.absoluteValue) {
-                        drawText(
-                            valueMeasuredText,
-                            topLeft = Offset(
-                                leftX + (barWidth - valueMeasuredText.size.width) / 2,
-                                leftY + (barHeight - valueMeasuredText.size.height) / 2,
-                            ),
-                        )
+                    if (valueMeasuredText.size.width < barWidth.absoluteValue) {
+                        if (valueMeasuredText.size.height < barHeight.absoluteValue) {
+                            drawText(
+                                valueMeasuredText,
+                                topLeft = Offset(
+                                    leftX + (barWidth - valueMeasuredText.size.width) / 2,
+                                    leftY + (barHeight - valueMeasuredText.size.height) / 2,
+                                ),
+                            )
+                        } else {
+                            drawText(
+                                valueMeasuredText,
+                                topLeft = Offset(
+                                    leftX + (barWidth - valueMeasuredText.size.width) / 2,
+                                    if (stockPoint.stockValue > 0) leftY - valueMeasuredText.size.height - 4.sp.value
+                                    else leftY + 4.sp.value,
+                                ),
+                            )
+                        }
                     }
 
                     totalGapTaken + gapWidth + (barWidth * multiStockPointList.size)
@@ -267,12 +303,12 @@ private fun Demo() {
             MultiStockPoint(
                 stockPointList = listOf(
                     StockPoint(1692388804000, 2.0),
-                    StockPoint(1660852804000, 3.0),
+                    StockPoint(1660852804000, 0.5),
                     StockPoint(1629316804000, -2.0),
                     StockPoint(1597780804000, 1.0),
                     StockPoint(1566158404000, -5.0),
                     StockPoint(1534622404000, 4.0),
-                    StockPoint(1503086404000, -2.0),
+                    StockPoint(1503086404000, -0.5),
                     StockPoint(1471550404000, -4.0),
                     StockPoint(1439928004000, 1.0),
                 ),
@@ -281,6 +317,7 @@ private fun Demo() {
                 null,
             ),
         ),
+        valueType = ValueType.Currency.Rupees,
         title = "WR Score"
     )
 }
