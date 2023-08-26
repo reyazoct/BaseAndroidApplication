@@ -54,8 +54,8 @@ fun YearStockGraph(
 
         if (flattenMap.toList().size <= 1) return
 
-        val yearsEpoch = flattenMap.mapNotNull { it.epochTimestamp }.distinct().sorted().toList()
-        val multiStockValues = flattenMap.mapNotNull { it.stockValue }
+        val yearsEpoch = flattenMap.map { it.epochTimestamp }.distinct().sorted().toList()
+        val multiStockValues = flattenMap.map { it.stockValue }
 
         val maxHeight = multiStockValues.max()
         val minHeight = multiStockValues.min()
@@ -66,7 +66,7 @@ fun YearStockGraph(
                 .fillMaxWidth()
                 .weight(1F),
         ) {
-            val widthTaken = if (title != null) {
+            var widthTaken = if (title != null) {
                 val year = DateTime(yearsEpoch.first()).year().get().toString()
                 val dummyYearMeasuredText = textMeasurer.measure(
                     text = AnnotatedString(year),
@@ -97,33 +97,36 @@ fun YearStockGraph(
                         ),
                     )
                 }
-                val counts = 6
-                val step = (maxHeight - minHeight) / (counts - 1)
-                var numberMaxWidth = Int.MIN_VALUE
 
-                repeat(counts) { index ->
-                    val numberMeasuredText = textMeasurer.measure(
-                        text = AnnotatedString((minHeight + (step * index)).toDisplayShortValue()),
-                        maxLines = 1,
-                        style = valueStyle,
-                        softWrap = false,
-                    )
-                    drawText(
-                        textLayoutResult = numberMeasuredText,
-                        topLeft = Offset(
-                            titleMeasuredText.size.height.toFloat() + 4.dp.value,
-                            (((size.height - dummyYearMeasuredText.size.height - numberMeasuredText.size.height) / (counts - 1)) * (counts - index - 1))
-                        ),
-                    )
-                    if (numberMaxWidth < numberMeasuredText.size.width) {
-                        numberMaxWidth = numberMeasuredText.size.width
-                    }
-                }
-
-                titleMeasuredText.size.height + numberMaxWidth + 12.dp.value
+                titleMeasuredText.size.height + 12.dp.value
             } else {
                 0F
             }
+
+            val counts = 6
+            val step = (maxHeight - minHeight) / (counts - 1)
+            var numberMaxWidth = 0
+
+            repeat(counts) { index ->
+                val numberMeasuredText = textMeasurer.measure(
+                    text = AnnotatedString((minHeight + (step * index)).toDisplayShortValue()),
+                    maxLines = 1,
+                    style = valueStyle,
+                    softWrap = false,
+                )
+                drawText(
+                    textLayoutResult = numberMeasuredText,
+                    topLeft = Offset(
+                        widthTaken + 4.dp.value,
+                        (((size.height - widthTaken - numberMeasuredText.size.height) / (counts - 1)) * (counts - index - 1))
+                    ),
+                )
+                if (numberMaxWidth < numberMeasuredText.size.width) {
+                    numberMaxWidth = numberMeasuredText.size.width
+                }
+            }
+            widthTaken += numberMaxWidth
+
             var heightTaken = 0F
             yearsEpoch.forEachIndexed { index, epoch ->
                 val year = DateTime(epoch).year().get().toString()
