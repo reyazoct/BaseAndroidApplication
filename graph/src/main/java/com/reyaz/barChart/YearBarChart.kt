@@ -29,8 +29,10 @@ import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
@@ -98,7 +100,17 @@ fun YearBarChart(
                     softWrap = false,
                 )
 
-                val titleHeight = size.height - dummyYearMeasuredText.size.height
+                val disclaimerHeight = if (disclaimerText != null) {
+                    val dummyDisclaimerMeasurer = textMeasurer.measure(
+                        text = AnnotatedString(disclaimerText),
+                        constraints = Constraints.fixedWidth((size.width).toInt()),
+                        overflow = TextOverflow.Ellipsis,
+                        style = disclaimerStyle,
+                    )
+                    dummyDisclaimerMeasurer.size.height
+                } else 0
+
+                val titleHeight = size.height - dummyYearMeasuredText.size.height - disclaimerHeight
                 val titleMeasuredText = textMeasurer.measure(
                     text = AnnotatedString(valueType.getDisplayTitle(title)),
                     maxLines = 1,
@@ -134,7 +146,7 @@ fun YearBarChart(
                         textLayoutResult = numberMeasuredText,
                         topLeft = Offset(
                             titleMeasuredText.size.height.toFloat() + 4.dp.value,
-                            (((size.height - dummyYearMeasuredText.size.height - numberMeasuredText.size.height) / (valueCount - 1)) * (valueCount - index - 1))
+                            (((size.height - dummyYearMeasuredText.size.height - disclaimerHeight - numberMeasuredText.size.height) / (valueCount - 1)) * (valueCount - index - 1))
                         ),
                     )
                     if (numberMaxWidth < numberMeasuredText.size.width) {
@@ -152,8 +164,8 @@ fun YearBarChart(
                 val disclaimerMeasuredText = textMeasurer.measure(
                     text = AnnotatedString(disclaimerText),
                     constraints = Constraints.fixedWidth((size.width - widthTaken).toInt()),
-                    maxLines = 1,
-                    style = disclaimerStyle.copy(textAlign = TextAlign.Center),
+                    overflow = TextOverflow.Ellipsis,
+                    style = disclaimerStyle,
                 )
                 drawText(
                     textLayoutResult = disclaimerMeasuredText,
@@ -162,7 +174,7 @@ fun YearBarChart(
                         size.height - disclaimerMeasuredText.size.height
                     ),
                 )
-                heightTaken = disclaimerMeasuredText.size.height.toFloat()
+                heightTaken = disclaimerMeasuredText.size.height.toFloat() + 8.sp.value
             }
 
             var yearHeight = 0F
@@ -223,7 +235,7 @@ fun YearBarChart(
                         maxLines = 1,
                         style = valueStyle.copy(
                             textAlign = TextAlign.Center,
-                            fontSize = 10.sp,
+                            fontSize = 8.sp,
                         ),
                     )
                     if (valueMeasuredText.size.width < barWidth.absoluteValue) {
@@ -295,6 +307,15 @@ fun YearBarChart(
 @Preview
 @Composable
 private fun Demo() {
+    val textStyleExtraSmall = TextStyle(
+        fontWeight = FontWeight.Normal,
+        fontSize = 10.sp,
+    )
+    val textStyleMini = TextStyle(
+        fontWeight = FontWeight.Normal,
+        fontSize = 8.sp,
+    )
+
     YearBarChart(
         modifier = Modifier
             .fillMaxWidth()
@@ -317,6 +338,11 @@ private fun Demo() {
                 null,
             ),
         ),
+        disclaimerText = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book",
+        titleStyle = textStyleExtraSmall.copy(color = Color(0xFFDCDCDC)),
+        yearStyle = textStyleExtraSmall.copy(color = Color(0xFFDCDCDC)),
+        valueStyle = textStyleExtraSmall.copy(color = Color(0xFFDCDCDC)),
+        disclaimerStyle = textStyleMini.copy(color = Color(0xFFDCDCDC)),
         valueType = ValueType.Currency.Rupees,
         title = "WR Score"
     )
