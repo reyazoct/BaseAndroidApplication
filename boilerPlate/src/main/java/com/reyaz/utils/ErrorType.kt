@@ -15,7 +15,7 @@ sealed class ErrorType {
     data class Generic(val message: String) : ErrorType()
     data class Unknown(val th: Throwable) : ErrorType()
 
-    fun getMessage(context: Context): String {
+    fun getMessage(context: Context, debug: Boolean = false): String {
         return when (this) {
             is Generic -> message
             is NoInternet -> context.getString(R.string.no_internet)
@@ -25,7 +25,10 @@ sealed class ErrorType {
             is ServerError -> context.getString(R.string.something_went_wrong)
             is Timeout -> context.getString(R.string.request_timed_out)
             is EmptyResponse -> context.getString(R.string.empty_response)
-            is Unknown -> th.message ?: context.getString(R.string.something_went_wrong)
+            is Unknown -> {
+                if (debug) th.message ?: context.getString(R.string.something_went_wrong)
+                else context.getString(R.string.something_went_wrong)
+            }
             else -> throw Exception("Invalid type")
         }
     }

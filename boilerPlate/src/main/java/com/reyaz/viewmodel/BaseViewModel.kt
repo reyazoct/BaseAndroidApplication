@@ -32,8 +32,6 @@ abstract class BaseViewModel(app: Application) : AndroidViewModel(app) {
             is ExceptionUnauthorised -> ErrorType.UnAuthorized
             is ExceptionEmptyResponse -> ErrorType.EmptyResponse
             is HttpException -> {
-//                val error = Postman.getError(throwable)
-//                val errorMessage = error.error?.error ?: error.error?.message ?: "Something went wrong"
                 if (throwable.code() == 500) {
                     ErrorType.ServerError
                 } else {

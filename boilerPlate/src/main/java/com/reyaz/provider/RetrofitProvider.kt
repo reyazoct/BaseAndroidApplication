@@ -11,15 +11,19 @@ import java.util.concurrent.TimeUnit
 
 object RetrofitProvider {
 
-    fun createRetrofitClient(url: String, interceptor: (Request.Builder) -> Unit): Retrofit {
+    fun createRetrofitClient(
+        url: String,
+        interceptor: (Request.Builder) -> Unit,
+        timeoutSeconds: Long = 15L,
+    ): Retrofit {
         val okHttpClientBuilder = OkHttpClient.Builder()
         val loggingInterceptor = HttpLoggingInterceptor()
 
         loggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
         with(okHttpClientBuilder) {
-            connectTimeout(60, TimeUnit.SECONDS)
-            readTimeout(60, TimeUnit.SECONDS)
-            writeTimeout(60, TimeUnit.SECONDS)
+            connectTimeout(timeoutSeconds, TimeUnit.SECONDS)
+            readTimeout(timeoutSeconds, TimeUnit.SECONDS)
+            writeTimeout(timeoutSeconds, TimeUnit.SECONDS)
             addInterceptor(loggingInterceptor)
             addInterceptor(networkInterceptor(interceptor))
         }
