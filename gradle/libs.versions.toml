@@ -1,7 +1,8 @@
 [versions]
-agp = "8.2.0-alpha16"
+agp = "8.3.0-alpha11"
 appcompat = "1.6.1"
 compiler = "1.5.1"
+converter-scalars = "2.6.0"
 kotlin = "1.8.10"
 core-ktx = "1.10.1"
 lifecycle-runtime-ktx = "2.6.1"
@@ -22,6 +23,7 @@ androidx-ui = { module = "androidx.compose.ui:ui", version.ref = "ui" }
 androidx-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "ui" }
 appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
+converter-scalars = { module = "com.squareup.retrofit2:converter-scalars", version.ref = "converter-scalars" }
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
 lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle-runtime-ktx" }
 activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity-compose" }

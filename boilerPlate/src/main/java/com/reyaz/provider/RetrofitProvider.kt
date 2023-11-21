@@ -7,6 +7,7 @@ import okhttp3.Request
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.scalars.ScalarsConverterFactory
 import java.util.concurrent.TimeUnit
 
 object RetrofitProvider {
@@ -28,12 +29,10 @@ object RetrofitProvider {
             addInterceptor(networkInterceptor(interceptor))
         }
 
-        val gson = GsonBuilder()
-            .setLenient()
-            .create()
         return Retrofit.Builder()
             .baseUrl(url)
-            .addConverterFactory(GsonConverterFactory.create(gson))
+            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(ScalarsConverterFactory.create())
             .client(okHttpClientBuilder.build())
             .build()
     }

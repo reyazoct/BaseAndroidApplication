@@ -1,0 +1,1 @@
+-keep class * extends com.google.gson.TypeAdapter
