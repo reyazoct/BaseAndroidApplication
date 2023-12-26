@@ -37,16 +37,9 @@ class DataRequestHelper<T> private constructor(
         }
     }
 
-    class Builder<T> {
+    class Builder<T>(viewModel: BaseViewModel) {
 
         private val coroutineScope: CoroutineScope
-        constructor(viewModel: BaseViewModel) {
-            coroutineScope = viewModel.viewModelScope
-        }
-
-        constructor(coroutineScope: CoroutineScope) {
-            this.coroutineScope = coroutineScope
-        }
 
         private var dataRequestCallback: (suspend () -> DataRequest<T>)? = null
         private var successCallback: (suspend (data: T) -> Unit)? = null
@@ -76,6 +69,10 @@ class DataRequestHelper<T> private constructor(
                 finalSuccessCallback,
                 failureCallback ?: {},
             )
+        }
+
+        init {
+            coroutineScope = viewModel.viewModelScope
         }
     }
 }
