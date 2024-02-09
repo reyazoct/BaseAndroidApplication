@@ -29,8 +29,8 @@ fun DayChangeGraph(
         val maxHeight = stockValues.max()
         val minHeight = stockValues.min()
 
-        val firstStockValue = stockPointList.first().stockValue ?: 0.0
-        val lastStockValue = stockPointList.last().stockValue ?: 0.0
+        val firstStockValue = stockPointList.first().stockValue
+        val lastStockValue = stockPointList.last().stockValue
         val graphColor = if (firstStockValue > lastStockValue) {
             Color(0xFFE96D6D)
         } else if (firstStockValue < lastStockValue) {
