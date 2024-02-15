@@ -4,14 +4,15 @@ import android.content.Context
 import com.reyaz.R
 
 sealed class ErrorType {
-    object NoInternet : ErrorType()
-    object Timeout : ErrorType()
-    object ServerDown : ErrorType()
-    object OldVersion : ErrorType()
-    object ServerError : ErrorType()
-    object UnAuthorized : ErrorType()
-    object NotAllowed : ErrorType()
-    object EmptyResponse : ErrorType()
+    data object NoInternet : ErrorType()
+    data object Timeout : ErrorType()
+    data object ServerDown : ErrorType()
+    data object OldVersion : ErrorType()
+    data object ServerError : ErrorType()
+    data object UnAuthorized : ErrorType()
+    data object Forbidden : ErrorType()
+    data object NotAllowed : ErrorType()
+    data object EmptyResponse : ErrorType()
     data class Generic(val message: String) : ErrorType()
     data class Unknown(val th: Throwable) : ErrorType()
 
@@ -25,11 +26,12 @@ sealed class ErrorType {
             is ServerError -> context.getString(R.string.something_went_wrong)
             is Timeout -> context.getString(R.string.request_timed_out)
             is EmptyResponse -> context.getString(R.string.empty_response)
+            is Forbidden -> context.getString(R.string.access_forbidden)
+            is UnAuthorized -> context.getString(R.string.unauthorized)
             is Unknown -> {
                 if (debug) th.message ?: context.getString(R.string.something_went_wrong)
                 else context.getString(R.string.something_went_wrong)
             }
-            else -> throw Exception("Invalid type")
         }
     }
 

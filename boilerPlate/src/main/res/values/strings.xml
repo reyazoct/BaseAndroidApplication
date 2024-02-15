@@ -7,4 +7,6 @@
     <string name="something_went_wrong">Something went wrong</string>
     <string name="request_timed_out">Request Timed out</string>
     <string name="empty_response">Empty Response Body</string>
+    <string name="access_forbidden">Access Forbidden</string>
+    <string name="unauthorized">UnAuthorized</string>
 </resources>
