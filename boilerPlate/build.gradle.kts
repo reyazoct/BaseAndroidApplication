@@ -1,3 +1,5 @@
+import java.net.URI
+
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
@@ -59,7 +61,7 @@ dependencies {
 afterEvaluate {
     publishing {
         publications {
-            register<MavenPublication>("release") {
+            register<MavenPublication>("maven") {
                 groupId = "com.reyaz"
                 artifactId = "boilerPlate"
                 version = "0.1"
@@ -67,7 +69,27 @@ afterEvaluate {
                 afterEvaluate {
                     from(components["release"])
                 }
+
+                pom {
+                    name = "Compose Boiler Plate"
+                    description = "A library to use use boiler plate code directly"
+                }
+            }
+        }
+
+        val spaceUserName: String by project
+        val spacePassword: String by project
+
+        repositories {
+            maven {
+                credentials {
+                    username = spaceUserName
+                    password = spacePassword
+                }
+
+                url = URI("https://maven.pkg.jetbrains.space/reyaz/p/main/boiler-plate")
             }
         }
     }
 }
+

@@ -1,3 +1,5 @@
+import java.net.URI
+
 @Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
     id("com.android.library")
@@ -56,7 +58,7 @@ dependencies {
 afterEvaluate {
     publishing {
         publications {
-            register<MavenPublication>("release") {
+            register<MavenPublication>("maven") {
                 groupId = "com.reyaz"
                 artifactId = "graphs"
                 version = "0.1"
@@ -64,6 +66,25 @@ afterEvaluate {
                 afterEvaluate {
                     from(components["release"])
                 }
+
+                pom {
+                    name = "Compose Graphs"
+                    description = "A library to use graphs for Jetpack compose"
+                }
+            }
+        }
+
+        val spaceUserName: String by project
+        val spacePassword: String by project
+
+        repositories {
+            maven {
+                credentials {
+                    username = spaceUserName
+                    password = spacePassword
+                }
+
+                url = URI("https://maven.pkg.jetbrains.space/reyaz/p/main/graphs")
             }
         }
     }
