@@ -2,6 +2,7 @@ package com.reyaz.repository
 
 import android.util.Log
 import com.reyaz.exception.ExceptionEmptyResponse
+import com.reyaz.exception.ExceptionForbidden
 import com.reyaz.exception.ExceptionOldVersion
 import com.reyaz.exception.ExceptionServerDown
 import com.reyaz.exception.ExceptionUnauthorised
@@ -32,6 +33,7 @@ abstract class BaseRepository<AS> {
         } else {
             val ex = when (response.code()) {
                 401 -> ExceptionUnauthorised()
+                403 -> ExceptionForbidden()
                 502, 503 -> ExceptionServerDown()
                 410 -> ExceptionOldVersion()
                 else -> HttpException(response)
